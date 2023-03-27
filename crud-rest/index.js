@@ -1,4 +1,93 @@
 'use strict';
+
+// CRUD operations
+const { DynamoDB } = require('@aws-sdk/client-dynamodb');
+const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
+const db = new DynamoDB();
+
+const TABLE_NAME = 'giphys';
+
+// PUT REQUEST ==> Create a new table
+exports.createHandler = async () => {
+  const params = {
+    user_id: '123',
+    giphyData: await getGiphys('batman'),
+  };
+
+  const result = await db.putItem({
+    TableName: TABLE_NAME,
+    Item: marshall(params),
+  });
+
+  return result;
+};
+
+// GET REQUEST
+exports.getHandler = async () => {
+  const params = {
+    user_id: '123',
+  };
+
+  const { Item } = await db.getItem({
+    TableName: TABLE_NAME,
+    Key: marshall(params),
+  });
+
+  return unmarshall(Item);
+};
+
+// UPDATE REQUEST
+exports.updateHandler = async (event) => {
+  const params = {
+    user_id: '123',
+  };
+
+  const data = await getGiphys('superman');
+
+  const result = await db.updateItem({
+    TableName: TABLE_NAME,
+    Key: marshall(params),
+    UpdateExpression: 'SET giphyData= :updated', // rename attribute name
+    ExpressionAttributeValues: {
+      // assigning array data. Must have "L" key means List(array), and "S" means String
+      ':updated': {
+        L: data.map((el) => {
+          return { S: el };
+        }),
+      },
+    },
+  });
+
+  console.log(result);
+
+  return result;
+};
+
+exports.deleteHandler = async (event) => {
+  const params = {
+    user_id: '123',
+  };
+
+  const result = await db.deleteItem({
+    TableName: TABLE_NAME,
+    Key: marshall(params),
+  });
+
+  console.log(result);
+
+  return result;
+};
+
+const getGiphys = async (name) => {
+  const result = await axios.get(
+    `https://api.giphy.com/v1/gifs/search?api_key=QPHq62keOwy2IJ46dWicOPFANBwsBnK4&limit=3&offset=0&q=${name}`
+  );
+
+  const urls = result.data.data.map((el) => el.url);
+
+  return urls;
+};
+// ===========================================================================================
 const AWS = require('aws-sdk');
 const { default: axios } = require('axios');
 const nodemailer = require('nodemailer');
@@ -63,88 +152,4 @@ exports.function2 = async (event) => {
   console.log(urls);
 
   return urls;
-};
-
-// CRUD operations
-const { DynamoDB } = require('@aws-sdk/client-dynamodb');
-const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
-const db = new DynamoDB();
-
-const getGiphys = async (name) => {
-  const result = await axios.get(
-    `https://api.giphy.com/v1/gifs/search?api_key=QPHq62keOwy2IJ46dWicOPFANBwsBnK4&limit=3&offset=0&q=${name}`
-  );
-
-  const urls = result.data.data.map((el) => el.url);
-
-  return urls;
-};
-
-// PUT REQUEST
-exports.createHandler = async () => {
-  const params = {
-    user_id: '123',
-    giphyData: await getGiphys('batman'),
-  };
-
-  const result = await db.putItem({
-    TableName: 'giphys',
-    Item: marshall(params),
-  });
-
-  return result;
-};
-// GET REQUEST
-exports.getHandler = async () => {
-  const params = {
-    user_id: '123',
-  };
-
-  const { Item } = await db.getItem({
-    TableName: 'giphys',
-    Key: marshall(params),
-  });
-
-  return unmarshall(Item);
-};
-
-// UPDATE REQUEST
-exports.updateHandler = async (event) => {
-  const params = {
-    user_id: '123',
-  };
-
-  const data = await getGiphys('superman');
-
-  const result = await db.updateItem({
-    TableName: 'giphys',
-    Key: marshall(params),
-    UpdateExpression: 'SET giphyData= :updated',
-    ExpressionAttributeValues: {
-      ':updated': {
-        L: data.map((el) => {
-          return { S: el };
-        }),
-      },
-    },
-  });
-
-  console.log(result);
-
-  return result;
-};
-
-exports.deleteHandler = async (event) => {
-  const params = {
-    user_Id: '123',
-  };
-
-  const result = await db.deleteItem({
-    TableName: 'giphys',
-    Key: marshall(params),
-  });
-
-  console.log(result);
-
-  return result;
 };
