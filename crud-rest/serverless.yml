@@ -1,0 +1,30 @@
+service: serverless-test
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 'lambda:InvokeFunction'
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - 'dynamodb:*'
+          Resource: '*'
+
+functions:
+  # myFunction1:
+  #   handler: index.function1
+  # myFunction2:
+  #   handler: index.function2
+  createHandler:
+    handler: index.createHandler
+  updateHandler:
+    handler: index.updateHandler
+  getHandler:
+    handler: index.getHandler
+  deleteHandler:
+    handler: index.deleteHandler
