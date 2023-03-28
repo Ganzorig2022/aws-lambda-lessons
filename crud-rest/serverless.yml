@@ -41,7 +41,7 @@ functions:
     events:
       - stream:
           type: dynamodb
-          # To GET ARN value ==> dynamodb --> Table --> Update ssettings --> Exports and Streams -->  DynamoDB stream details--> Turn on
+          # To GET ARN value ==> dynamodb --> Table --> Update ssettings --> Exports and Streams -->  DynamoDB stream details--> Turn on --> New Image
           arn: arn:aws:dynamodb:us-east-1:930277727374:table/userData/stream/2023-03-28T03:35:23.126
           # 1 dor 10 l orj irwel event gej vzne.
           batchSize: 10
