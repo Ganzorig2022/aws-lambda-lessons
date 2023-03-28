@@ -1,10 +1,10 @@
 'use strict';
+require('dotenv').config();
 
 const { DynamoDB } = require('@aws-sdk/client-dynamodb');
 const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
 const db = new DynamoDB();
 const bcrypt = require('bcryptjs');
-const AWS = require('aws-sdk');
 const nodemailer = require('nodemailer');
 
 const TABLE_NAME = 'userData';
@@ -28,8 +28,28 @@ exports.createUserHandler = async (event) => {
   return result;
 };
 
-// GET REQUEST
+// GET REQUEST ==> When new table created, then returns its data fron dynamodb using event stream
 exports.getUserHandler = async (event) => {
-  const { email, username, lastname } = event.Records[0].dynamodb.NewImage;
-  // email notifiction end bichne.
+  const { email, firstname, lastname } = event.Records[0].dynamodb.NewImage;
+
+  // email notifiction.
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+      user: email,
+      pass: process.env.GOOGLE_APP_PASSWORD,
+    },
+  });
+
+  const result = await transporter.sendMail({
+    from: email,
+    to: email,
+    subject: ' Sending email using node.js',
+    text: `Hello, Mr ${firstname} ${lastname}. This email has been sent by AWS in nodejs`,
+  });
+
+  console.log(result.messageId);
+
+  return result.messageId;
 };

@@ -36,6 +36,7 @@ functions:
   #   handler: index.getDataByGlobalIndex
   createUserHandler:
     handler: user.createUserHandler
+  # DYNAMODB EVENT STREAM
   getUserHandler:
     handler: user.getUserHandler
     events:
