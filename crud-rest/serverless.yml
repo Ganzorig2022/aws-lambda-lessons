@@ -20,11 +20,29 @@ functions:
   #   handler: index.function1
   # myFunction2:
   #   handler: index.function2
-  createHandler:
-    handler: index.createHandler
-  updateHandler:
-    handler: index.updateHandler
-  getHandler:
-    handler: index.getHandler
-  deleteHandler:
-    handler: index.deleteHandler
+  # createHandler:
+  #   handler: index.createHandler
+  # updateHandler:
+  #   handler: index.updateHandler
+  # getHandler:
+  #   handler: index.getHandler
+  # deleteHandler:
+  #   handler: index.deleteHandler
+  # getDataBySortKey:
+  #   handler: index.getDataBySortKey
+  # getDataByLocalIndex:
+  #   handler: index.getDataByLocalIndex
+  # getDataByGlobalIndex:
+  #   handler: index.getDataByGlobalIndex
+  createUserHandler:
+    handler: user.createUserHandler
+  getUserHandler:
+    handler: user.getUserHandler
+    events:
+      - stream:
+          type: dynamodb
+          # To GET ARN value ==> dynamodb --> Table --> Update ssettings --> Exports and Streams -->  DynamoDB stream details--> Turn on
+          arn: arn:aws:dynamodb:us-east-1:930277727374:table/userData/stream/2023-03-28T03:35:23.126
+          # 1 dor 10 l orj irwel event gej vzne.
+          batchSize: 10
+          startingPosition: LATEST
