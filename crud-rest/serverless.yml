@@ -1,6 +1,9 @@
 service: serverless-test
 frameworkVersion: '3'
 
+custom:
+  tableName: 'Giphy'
+
 provider:
   name: aws
   runtime: nodejs16.x
@@ -14,6 +17,8 @@ provider:
           Action:
             - 'dynamodb:*'
           Resource: '*'
+  environment:
+    GIPHY_TABLE: ${self:custom.tableName}
 
 functions:
   # myFunction1:
@@ -52,13 +57,17 @@ functions:
     events:
       - http:
           method: post
-          path: /
-  getGiphy:
-    handler: api.getGiphy
+          path: /giphy
+          cors: true
+  getSingleGiphy:
+    handler: api.getSingleGiphy
     events:
       - http:
           method: get
-          path: /
+          # dynamic param id
+          path: /giphy/{id}
+          cors: true
+
 resources:
   Resources:
     # Table name --> Giphy

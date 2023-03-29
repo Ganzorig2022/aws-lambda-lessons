@@ -1,0 +1,71 @@
+service: rest-crud
+frameworkVersion: '3'
+
+# user-table-dev gesen tableName uusgene.
+# custom:
+#   tableName: 'users-table-${sls:stage}'
+custom:
+  tableName: 'giphy'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [GiphyTable, Arn]
+  environment:
+    GIPHY_TABLE: ${self:custom.tableName}
+
+functions:
+  create:
+    handler: handlers/createGiphy.createGiphy
+    events:
+      - http:
+          path: giphy
+          method: post
+          cors: true
+  list:
+    handler: handlers/listGiphys.listGiphys
+    events:
+      - http:
+          path: giphy/list
+          method: get
+          cors: true
+  get:
+    handler: handlers/getGiphy.getGiphy
+    events:
+      - http:
+          path: giphy/{id}
+          method: get
+          cors: true
+  delete:
+    handler: handlers/deleteGiphy.deleteGiphy
+    events:
+      - http:
+          path: giphy/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    GiphyTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: giphyId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: giphyId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:custom.tableName}
