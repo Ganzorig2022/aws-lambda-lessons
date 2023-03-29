@@ -34,16 +34,43 @@ functions:
   #   handler: index.getDataByLocalIndex
   # getDataByGlobalIndex:
   #   handler: index.getDataByGlobalIndex
-  createUserHandler:
-    handler: user.createUserHandler
-  # DYNAMODB EVENT STREAM
-  getUserHandler:
-    handler: user.getUserHandler
+  # createUserHandler:
+  #   handler: user.createUserHandler
+  # # DYNAMODB EVENT STREAM
+  # getUserHandler:
+  #   handler: user.getUserHandler
+  #   events:
+  #     - stream:
+  #         type: dynamodb
+  #         # To GET ARN value ==> dynamodb --> Table --> Update ssettings --> Exports and Streams -->  DynamoDB stream details--> Turn on --> New Image
+  #         arn: arn:aws:dynamodb:us-east-1:930277727374:table/userData/stream/2023-03-28T03:35:23.126
+  #         # 1 dor 10 l orj irwel event gej vzne.
+  #         batchSize: 10
+  #         startingPosition: LATEST
+  createGiphy:
+    handler: api.createGiphy
     events:
-      - stream:
-          type: dynamodb
-          # To GET ARN value ==> dynamodb --> Table --> Update ssettings --> Exports and Streams -->  DynamoDB stream details--> Turn on --> New Image
-          arn: arn:aws:dynamodb:us-east-1:930277727374:table/userData/stream/2023-03-28T03:35:23.126
-          # 1 dor 10 l orj irwel event gej vzne.
-          batchSize: 10
-          startingPosition: LATEST
+      - http:
+          method: post
+          path: /
+  getGiphy:
+    handler: api.getGiphy
+    events:
+      - http:
+          method: get
+          path: /
+resources:
+  Resources:
+    # Table name --> Giphy
+    Giphy:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Giphy
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          # HASH_KEY
+          - AttributeName: giphyId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: giphyId
+            KeyType: HASH
