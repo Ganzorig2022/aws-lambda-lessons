@@ -18,28 +18,29 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource:
-            - Fn::GetAtt: [UsersTable, Arn]
-            # Resource: !GetAtt UsersTable.Arn
+          # Resource:
+          #   - Fn::GetAtt: [UsersTable, Arn]
+          # Resource: !GetAtt UsersTable.Arn
+          Resource: '*'
 
   environment:
     USERS_TABLE: ${self:custom.tableName}
 
 functions:
-  create:
-    handler: handlers/createUser.createUser
-    events:
-      - http:
-          path: user
-          method: post
-          cors: true
-  get:
-    handler: handlers/getUser.getUserByGlobalIndex
-    events:
-      - http:
-          path: user
-          method: get
-          cors: true
+  # create:
+  #   handler: handlers/createUser.createUser
+  #   events:
+  #     - http:
+  #         path: user
+  #         method: post
+  #         cors: true
+  # get:
+  #   handler: handlers/getUser.getUserByGlobalIndex
+  #   events:
+  #     - http:
+  #         path: user
+  #         method: get
+  #         cors: true
   login:
     handler: handlers/loginUser.loginUser
     events:
@@ -61,4 +62,3 @@ resources:
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:custom.tableName}
-# https://cloudkatha.com/how-to-create-dynamodb-table-with-global-secondary-index-using-cloudformation/
