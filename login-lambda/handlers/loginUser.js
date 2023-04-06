@@ -54,3 +54,6 @@ module.exports.loginUser = async (event) => {
 };
 
 // # https://cloudkatha.com/how-to-create-dynamodb-table-with-global-secondary-index-using-cloudformation/
+
+// s3 --> lambda --> event --> S3.records -->
+// Text in image

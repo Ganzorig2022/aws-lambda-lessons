@@ -1,0 +1,17 @@
+service: aws-rekognition
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+        - rekognition:DetectText
+      Resource:
+        - '*'
+
+functions:
+  function1:
+    handler: index.handler
